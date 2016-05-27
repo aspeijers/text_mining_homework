@@ -5,7 +5,6 @@ import os
 import numpy as np
 import sys
 import time, random
-import json
 import re
 
 
@@ -42,12 +41,31 @@ def get_article_urls(results_page_url,website_prefix):
 
 def format_content(html):
     """
-    What does this do???
+    This gets the title, date, number of shares on facebook and text from an article.
     """
-    soup = bs(html,"html.parser")
-    description_raw= soup.find('div',{"class": "long-description"})
-    description = description_raw.get_text()  
-    return description
+    soup = bs(html,"lxml")
+    
+    # find article title
+    title = soup.find('h1', {'class': 'cN-headingPage'}).get_text() 
+    
+    # find date
+    date_str = soup.find_all('time', {'itemprop': 'datePublished'})
+    date = date_str[0].get('datetime')
+    
+    # find number of comments (if I can't get fb shares)
+    comments_str = soup.find('li', {'class': 'comments'}).get_text()
+    comments = re.sub('[^0-9]', " ", comments_str).split()
+        
+    # find content of the article
+    article_body = soup.find('div', {"class": "articleBody"}) 
+    paragraphs = article_body.find_all('p', recursive=False)
+    article_text = " "
+    for i in range(len(paragraphs)-1): # don't include final byline 
+        paragraph = paragraphs[i].get_text()  
+        article_text = article_text + paragraph
+    
+    # insert 10 stars for title, 8 for date, 6 for comments, 4 for text
+    return ('**********' + title, '********' + date, '******' + comments[0], '****' + article_text)
  
  
 
@@ -177,7 +195,7 @@ def scrape(urls, file_prefix):
         
     
     
-def main(main_url):
+def main(first_url):
     """
     Wrapper function for running from the command line. 
     """
@@ -208,3 +226,4 @@ if __name__=="__main__":
 #### Trial
 
 #first_url = "http://www.theage.com.au/comment/by/waleed-aly"
+#article_url = "http://www.theage.com.au/comment/malcolm-turnbull-stop-dithering-on-tax-reform-and-tell-us-what-you-really-think-20160217-gmx1qs"
