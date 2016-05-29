@@ -8,14 +8,35 @@ import time, random
 import re
 
 
-def get_html(url):
+def get_no_pages(first_url):
     """
-    This function gets the whole html content of a specific url
+    This function takes the first results page of Waleed Aly's articles and
+    outputs the total number of result pages.
     """
-    response = urllib2.urlopen(url) 
+    response = urllib2.urlopen(first_url) 
     html = response.read()
-    return html 
+    soup = bs(html,"lxml")
+    pages = []
+    for page in soup.find_all('li',{"class": "page"}):
+        pages.append(page.get_text())
+    no_pages = int(max(pages))
+    return(no_pages)
+    
 
+
+def create_result_page_urls(first_url, no_pages):
+    """
+    This function creates artificially a list of urls for 
+    the different result pages. It takes as an argument the url of the first 
+    results page and the number of results pages. 
+    """
+    page_urls = [first_url]
+    for i in range((no_pages-1)):
+        url = first_url+"?offset="+str((i+1)*20)
+        page_urls.append(url)
+    return(page_urls)
+    
+    
 
 def get_article_urls(results_page_url,website_prefix):
     """
@@ -39,65 +60,6 @@ def get_article_urls(results_page_url,website_prefix):
 
 
 
-def format_content(html):
-    """
-    This gets the title, date, number of shares on facebook and text from an article.
-    """
-    soup = bs(html,"lxml")
-    
-    # find article title
-    title = soup.find('h1', {'class': 'cN-headingPage'}).get_text() 
-    
-    # find date
-    date_str = soup.find_all('time', {'itemprop': 'datePublished'})
-    date = date_str[0].get('datetime')
-    
-    # find number of comments (if I can't get fb shares)
-    comments_str = soup.find('li', {'class': 'comments'}).get_text()
-    comments = re.sub('[^0-9]', " ", comments_str).split()
-        
-    # find content of the article
-    article_body = soup.find('div', {"class": "articleBody"}) 
-    paragraphs = article_body.find_all('p', recursive=False)
-    article_text = " "
-    for i in range(len(paragraphs)-1): # don't include final byline 
-        paragraph = paragraphs[i].get_text()  
-        article_text = article_text + paragraph
-    
-    # insert 10 stars for title, 8 for date, 6 for comments, 4 for text
-    return ('**********' + title, '********' + date, '******' + comments[0], '****' + article_text)
- 
- 
-
-def get_no_pages(first_url):
-    """
-    This function takes the first results page of Waleed Aly's articles and
-    outputs the total number of result pages.
-    """
-    response = urllib2.urlopen(first_url) 
-    html = response.read()
-    soup = bs(html,"lxml")
-    pages = []
-    for page in soup.find_all('li',{"class": "page"}):
-        pages.append(page.get_text())
-    no_pages = int(max(pages))
-    return(no_pages)
-
-    
-def create_result_page_urls(first_url, no_pages):
-    """
-    This function creates artificially a list of urls for 
-    the different result pages. It takes as an argument the url of the first 
-    results page and the number of results pages. 
-    """
-    page_urls = [first_url]
-    for i in range((no_pages-1)):
-        url = first_url+"?offset="+str((i+1)*20)
-        page_urls.append(url)
-    return(page_urls)
-
-
-
 def scrape_article_urls(urls):
     '''
     This function takes a list of result page urls and returns a list of the 
@@ -117,7 +79,7 @@ def scrape_article_urls(urls):
         time.sleep(delay)
         print 'file: ' + str(idx) + ' delay= ' + str(delay) 
         try:
-            # extract the property urls
+            # extract the article urls and add to the list
             article_urls = article_urls + get_article_urls(url,"")
             
             #add completed url to the log of completed urls
@@ -138,10 +100,50 @@ def scrape_article_urls(urls):
         
     return(article_urls)
         
-  
-  
 
-def scrape(urls, file_prefix):
+     
+def get_html(url):
+    """
+    This function gets the whole html content of a specific url
+    """
+    response = urllib2.urlopen(url) 
+    html = response.read()
+    return html 
+
+
+
+def format_content(html):
+    """
+    This gets the title, date, number of shares on facebook and text from an article.
+    """
+    soup = bs(html,"lxml")
+        
+    # find article title
+    title = soup.find('h1', {'class': 'cN-headingPage'}).get_text().encode('utf-8')
+    
+    # find date
+    date_str = soup.find_all('time', {'itemprop': 'datePublished'})
+    date = date_str[0].get('datetime')
+    
+    # find number of comments (if I can't get fb shares)
+    comments_str = soup.find('li', {'class': 'comments'}).get_text()
+    comments = re.sub('[^0-9]', " ", comments_str).split()
+    comments_no = comments[0].encode('utf-8')
+        
+    # find content of the article
+    article_body = soup.find('div', {"class": "articleBody"}) 
+    paragraphs = article_body.find_all('p', recursive=False)
+    article_text = " "
+    for i in range(len(paragraphs)-1): # don't include final byline 
+        paragraph = paragraphs[i].get_text().encode('utf-8')
+        article_text = article_text + paragraph
+    
+    # insert 10 stars for title, 8 for date, 6 for comments, 4 for text
+    return ('**********' + title + '********' + date + '******' + comments_no + '****' + article_text)
+ 
+
+ 
+def scrape_article_info(urls, file_prefix):
     '''
     This function takes a list of article urls and scrapes the html content of
     each one. Logs are kept of completed and rejected urls. 
@@ -156,21 +158,34 @@ def scrape(urls, file_prefix):
         print 'file: ' + file_prefix + str(idx) + ' delay= ' + str(delay) 
         try:
             #try to retrieve information from url
-            articles.append(get_html(url))
+            article_html = get_html(url)
             
             #add completed url to the log of completed urls
             # open a portal             
-            with open("./completed_article_urls.txt", "a") as complete_file:
+            with open("./completed_html_article_urls.txt", "a") as complete_file:
                 complete_file.write(url + '\n')
-                
                 #close the portal
                 complete_file.close()
+                
+            try:
+                # try to format the content
+                articles.append(format_content(article_html))
+                
+                # add articles that are able to be formatted to a log
+                with open("./completed_formatting_article_urls.txt", "a") as complete_file:
+                    complete_file.write(url + '\n')
+                    complete_file.close()
+            
+            except:
+                # add articles that are unable to be formatted to a log
+                with open("./rejected_formatting_article_urls.txt", "a") as rejected_file:
+                    rejected_file.write(url + '\n')
+                    rejected_file.close()
+                    
         except:
             #add rejected urls to the log of rejected urls
-            # open a portal             
-            with open("./rejected_article_urls.txt", "a") as rejected_file:
-                rejected_file.write(url + '\n')
-                #close the portal                
+            with open("./rejected_html_article_urls.txt", "a") as rejected_file:
+                rejected_file.write(url + '\n')               
                 rejected_file.close()
         
         if idx % 10 == 0 and idx != 0: 
@@ -212,7 +227,7 @@ def main(first_url):
     if os.path.isfile("./rejected_result_page_urls.txt"):
         print("Error in extracting page urls")        
         return(article_urls)
-    scrape(article_urls, "waleed_articles_")
+    scrape_article_info(article_urls, "waleed_articles_")
 
 #automate the function    
 
