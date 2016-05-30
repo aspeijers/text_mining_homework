@@ -79,7 +79,7 @@ def scrape_article_info(urls, file_prefix):
             
             #add completed url to the log of completed urls
             # open a portal             
-            with open("./completed_html_article_urls_2.txt", "a") as complete_file:
+            with open("./logs/completed_html_article_urls_2.txt", "a") as complete_file:
                 complete_file.write(url + '\n')
                 #close the portal
                 complete_file.close()
@@ -89,19 +89,19 @@ def scrape_article_info(urls, file_prefix):
                 articles.append(format_content(article_html))
                 
                 # add articles that are able to be formatted to a log
-                with open("./completed_formatting_article_urls_2.txt", "a") as complete_file:
+                with open("./logs/completed_formatting_article_urls_2.txt", "a") as complete_file:
                     complete_file.write(url + '\n')
                     complete_file.close()
             
             except:
                 # add articles that are unable to be formatted to a log
-                with open("./rejected_formatting_article_urls_2.txt", "a") as rejected_file:
+                with open("./logs/rejected_formatting_article_urls_2.txt", "a") as rejected_file:
                     rejected_file.write(url + '\n')
                     rejected_file.close()
                     
         except:
             #add rejected urls to the log of rejected urls
-            with open("./rejected_html_article_urls_2.txt", "a") as rejected_file:
+            with open("./logs/rejected_html_article_urls_2.txt", "a") as rejected_file:
                 rejected_file.write(url + '\n')               
                 rejected_file.close()
         
@@ -114,14 +114,14 @@ def scrape_article_info(urls, file_prefix):
             articles = []
             
             #add the index of last file to be written to disk
-            with open("./saved_data_index_2.txt", "a") as saved_file:
+            with open("./logs/saved_data_index_2.txt", "a") as saved_file:
                 saved_file.write(file_prefix + str(idx) + '\n')
                 saved_file.close()
     
     #Save remaining data to file    
     file_name = file_prefix + str(idx) + '.gz'
     np.savetxt(file_name, articles, delimiter='\n', fmt='%s')
-    with open("./saved_data_index_2.txt", "a") as saved_file:
+    with open("./logs/saved_data_index_2.txt", "a") as saved_file:
                 saved_file.write(file_prefix + str(idx) + '\n')
                 saved_file.close()
         
@@ -129,7 +129,7 @@ def scrape_article_info(urls, file_prefix):
     
 ##########################################################################################
 # read in the rejected urls 
-urls_str = open('./rejected_formatting_article_urls.txt', 'r').read()
+urls_str = open('./logs/rejected_formatting_article_urls.txt', 'r').read()
 # convert to list
 urls = urls_str.split('\n')
 del urls[-1]
