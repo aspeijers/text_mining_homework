@@ -310,7 +310,7 @@ def convert_to_dictionary(file):
 os.chdir("/Users/annekespeijers/Desktop/BGSE/Term3/TextMining/Homework/Project/")
 
 # load in data
-with open('articles.txt') as file:
+with open('./data/articles.txt') as file:
     #articles = json.load(file, encoding="utf-8")
     articles = json.load(file)
 
@@ -318,11 +318,11 @@ with open('articles.txt') as file:
 corpus = Corpus(articles, 'stopwords.txt', 2)
 
 # save corpus object
-with open('corpus.pkl', 'wb') as output:
+with open('./data/corpus.pkl', 'wb') as output:
     pickle.dump(corpus, output, -1)
 
 # testing read in
-with open('corpus.pkl', 'rb') as input:
+with open('./data/corpus.pkl', 'rb') as input:
     corpus_test = pickle.load(input)
 
     

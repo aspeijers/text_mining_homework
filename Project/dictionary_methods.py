@@ -69,7 +69,7 @@ def convert_to_dictionary(file):
 os.chdir("/Users/annekespeijers/Desktop/BGSE/Term3/TextMining/Homework/Project/")
 
 # load in corpus
-with open('corpus.pkl', 'rb') as input:
+with open('./data/corpus.pkl', 'rb') as input:
     corpus = pickle.load(input)
 
 ###############################################################################
@@ -100,7 +100,7 @@ grdevices.dev_off()
 
 # plot afinn scores vs number of comments
 grdevices.png("./plots/afinn_plot.png")
-graphics.plot(sentiment, comments, xlab="Sentiment", ylab="Number of Comments", col="blue")
+graphics.plot(sentiment, comments, xlab="Sentiment", ylab="Number of Comments", col="dodgerblue", pch=19)
 graphics.title("Sentiment vs Popularity of Waleed Aly Articles")
 grdevices.dev_off()
 
@@ -143,7 +143,7 @@ grdevices.dev_off()
 
 # plot ethics score vs comments
 grdevices.png("./plots/ethic_plot.png")
-graphics.plot(ethic_score, ethic_comments, xlab="Ethics score", ylab="Number of Comments", col="blue")
+graphics.plot(ethic_score, ethic_comments, xlab="Ethics score", ylab="Number of Comments", col="dodgerblue", pch=19)
 graphics.title("Ethics vs Popularity of Waleed Aly Articles")
 grdevices.dev_off()
 
@@ -154,7 +154,7 @@ grdevices.dev_off()
 
 # plot politics score vs comments
 grdevices.png("./plots/politic_plot.png")
-graphics.plot(politic_score, politic_comments, xlab="Politics score", ylab="Number of Comments", col="blue")
+graphics.plot(politic_score, politic_comments, xlab="Politics score", ylab="Number of Comments", col="dodgerblue", pch=19)
 graphics.title("Politics vs Popularity of Waleed Aly Articles")
 grdevices.dev_off()
 

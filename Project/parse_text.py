@@ -65,11 +65,11 @@ articlesJSON = json.dumps(articles, ensure_ascii=False)
 
 # write json file
 # nb. Would usually use json.dump() but there is a bug relating to utf8 encoding so use the io library.
-with io.open('articles.txt', 'w', encoding="utf-8") as file:
+with io.open('./data/articles.txt', 'w', encoding="utf-8") as file:
     file.write(unicode(articlesJSON))
 
 
-# load in file
-with open('articles.txt') as file:    
-    articles = json.load(file, encoding="utf-8")
+# # load in file
+# with open('./data/articles.txt') as file:    
+#     articles = json.load(file, encoding="utf-8")
 

@@ -11,7 +11,7 @@ import pandas as pd
 os.chdir("/Users/annekespeijers/Desktop/BGSE/Term3/TextMining/Homework/Project/")
 
 # load in corpus
-with open('corpus.pkl', 'rb') as input:
+with open('./data/corpus.pkl', 'rb') as input:
     corpus = pickle.load(input)
 
 
