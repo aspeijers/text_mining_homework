@@ -109,16 +109,16 @@ grdevices.dev_off()
 ethic_dict = read_dictionary('./dictionaries/ethics.csv')
 politic_dict = read_dictionary('./dictionaries/politics.csv')
 
-negative_dict = read_dictionary('./dictionaries/negative.csv')
-positive_dict = read_dictionary('./dictionaries/positive.csv')
-passive_dict = read_dictionary('./dictionaries/passive.csv')
+# negative_dict = read_dictionary('./dictionaries/negative.csv')
+# positive_dict = read_dictionary('./dictionaries/positive.csv')
+# passive_dict = read_dictionary('./dictionaries/passive.csv')
 
 # rank articles according to their term count for each particular dictionary
 ethic_rank = corpus.dict_rank(ethic_dict, False)
 politic_rank = corpus.dict_rank(politic_dict, False)
-negative_rank = corpus.dict_rank(negative_dict, False)
-positive_rank = corpus.dict_rank(positive_dict, False)
-passive_rank = corpus.dict_rank(passive_dict, False)
+# negative_rank = corpus.dict_rank(negative_dict, False)
+# positive_rank = corpus.dict_rank(positive_dict, False)
+# passive_rank = corpus.dict_rank(passive_dict, False)
 
 # take out scores and no of comments for plotting
 ethic_score = [float(x[3]) for x in ethic_rank]
@@ -127,14 +127,14 @@ ethic_comments = [float(x[2]) for x in ethic_rank]
 politic_score = [float(x[3]) for x in politic_rank]
 politic_comments = [float(x[2]) for x in politic_rank]
 
-negative_score = [float(x[3]) for x in negative_rank]
-negative_comments = [float(x[2]) for x in negative_rank]
+# negative_score = [float(x[3]) for x in negative_rank]
+# negative_comments = [float(x[2]) for x in negative_rank]
 
-positive_score = [float(x[3]) for x in positive_rank]
-positive_comments = [float(x[2]) for x in positive_rank]
+# positive_score = [float(x[3]) for x in positive_rank]
+# positive_comments = [float(x[2]) for x in positive_rank]
 
-passive_score = [float(x[3]) for x in passive_rank]
-passive_comments = [float(x[2]) for x in passive_rank]
+# passive_score = [float(x[3]) for x in passive_rank]
+# passive_comments = [float(x[2]) for x in passive_rank]
 
 # ethics histogram
 grdevices.png("./plots/ethics_hist.png")
@@ -158,48 +158,48 @@ graphics.plot(politic_score, politic_comments, xlab="Politics score", ylab="Numb
 graphics.title("Politics vs Popularity of Waleed Aly Articles")
 grdevices.dev_off()
 
-# histograms for positive, negative and passive 
-grdevices.png("./plots/positive_hist.png")
-rhist(robjects.FloatVector(positive_score), xlab="Positive score", ylab="Number of documents", main="Distribution of Articles Relating to Politics")
-grdevices.dev_off()
+# # histograms for positive, negative and passive 
+# grdevices.png("./plots/positive_hist.png")
+# rhist(robjects.FloatVector(positive_score), xlab="Positive score", ylab="Number of documents", main="Distribution of Articles Relating to Politics")
+# grdevices.dev_off()
 
-grdevices.png("./plots/negative_hist.png")
-rhist(robjects.FloatVector(negative_score), xlab="Negative score", ylab="Number of documents", main="Distribution of Articles Relating to Politics")
-grdevices.dev_off()
+# grdevices.png("./plots/negative_hist.png")
+# rhist(robjects.FloatVector(negative_score), xlab="Negative score", ylab="Number of documents", main="Distribution of Articles Relating to Politics")
+# grdevices.dev_off()
 
-grdevices.png("./plots/passive_hist.png")
-rhist(robjects.FloatVector(passive_score), xlab="Passive score", ylab="Number of documents", main="Distribution of Articles Relating to Politics")
-grdevices.dev_off()
+# grdevices.png("./plots/passive_hist.png")
+# rhist(robjects.FloatVector(passive_score), xlab="Passive score", ylab="Number of documents", main="Distribution of Articles Relating to Politics")
+# grdevices.dev_off()
 
 
-# combine positive, negative and passive results into a dataframe
-L = len(negative_score)
-scores = negative_score + positive_score + passive_score
-comments = negative_comments + positive_comments + passive_comments
-dictionaries = ["negative"]*L + ["positive"]*L + ["passive"]*L
-posnegpas = pd.DataFrame({'Score': scores, 'Comments': comments, 'Dictionary': dictionaries })
+# # combine positive, negative and passive results into a dataframe
+# L = len(negative_score)
+# scores = negative_score + positive_score + passive_score
+# comments = negative_comments + positive_comments + passive_comments
+# dictionaries = ["negative"]*L + ["positive"]*L + ["passive"]*L
+# posnegpas = pd.DataFrame({'Score': scores, 'Comments': comments, 'Dictionary': dictionaries })
 
-# create function to plot positive, negative and passive scores together using ggplot
-plotFunc = robjects.r("""
- library(ggplot2)
+# # create function to plot positive, negative and passive scores together using ggplot
+# plotFunc = robjects.r("""
+#  library(ggplot2)
  
-function(df){
- p <- ggplot(df, aes(x=Score, y=Comments, col=factor(Dictionary))) +
- geom_point( ) +
- scale_colour_discrete(name="Dictionaries")
+# function(df){
+#  p <- ggplot(df, aes(x=Score, y=Comments, col=factor(Dictionary))) +
+#  geom_point( ) +
+#  scale_colour_discrete(name="Dictionaries")
  
-print(p)
- }
-""")
+# print(p)
+#  }
+# """)
 
-# convert the testData to an R dataframe
-robjects.pandas2ri.activate()
-posnegpas_R = robjects.conversion.py2ri(posnegpas)
+# # convert the testData to an R dataframe
+# robjects.pandas2ri.activate()
+# posnegpas_R = robjects.conversion.py2ri(posnegpas)
  
-# run the plot function on the dataframe
-grdevices.png('./plots/posnegpas_plot.png')
-plotFunc(posnegpas_R)
-grdevices.dev_off()
+# # run the plot function on the dataframe
+# grdevices.png('./plots/posnegpas_plot.png')
+# plotFunc(posnegpas_R)
+# grdevices.dev_off()
 
 
 
