@@ -240,5 +240,18 @@ if __name__=="__main__":
     
 #### Trial
 
-#first_url = "http://www.theage.com.au/comment/by/waleed-aly"
+# set working directory
+os.chdir("/Users/annekespeijers/Desktop/BGSE/Term3/TextMining/Homework/Project/")
+
+first_url = "http://www.theage.com.au/comment/by/waleed-aly"
+
+no_pages            = get_no_pages(first_url)
+result_page_urls    = create_result_page_urls(first_url, no_pages)
+article_urls        = get_article_urls(result_page_urls[0],"")
+article_urls_subset = article_urls[0:1]
+article_html        = get_html(article_urls_subset[0])
+article_formatted   = format_content(article_html)
+scrape_article_info(article_urls_subset, "test_")
+
 #article_url = "http://www.theage.com.au/comment/malcolm-turnbull-stop-dithering-on-tax-reform-and-tell-us-what-you-really-think-20160217-gmx1qs"
+
